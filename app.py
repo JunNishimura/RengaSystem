@@ -13,7 +13,7 @@ yomite_history = []
 ku_history = []
 renga_states = States(yomite=Yomite.AI)
 app = Flask(__name__)
-tagger = MeCab.Tagger("-d {}".format("./dict/UniDic-wabun_1603/"))
+tagger = MeCab.Tagger("-d {}".format("./dict/"))
 
 dakuten_dict = {
     'が': 'か', 'ぎ': 'き', 'ぐ': 'く', 'げ': 'け', 'ご': 'こ',
