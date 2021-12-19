@@ -1,0 +1,125 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Helvetica Neue", "Helvetica", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Arial", "Yu Gothic", "Meiryo", sans-serif;
+  font-size: 16px;
+  width: 100vw;
+  height: 100vh;
+  background-color: #ede4cd; /* 練色 */
+  color: #432f2f; /* 黒鳶 */
+  text-align: center;
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.header {
+  height: 150px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.header .title {
+  font-size: 30px;
+  font-weight: bold;
+  padding: 0.618rem;
+  width: 300px;
+  border-bottom: 2px solid #432f2f;
+}
+
+.overview {
+  padding: 2rem;
+  line-height: 1.6rem;
+}
+
+.creation {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1.6rem 2rem;
+  text-align: center;
+}
+
+.creation-title {
+  font-size: 22px;
+}
+
+.creation-explanation {
+  color: #000;
+  font-size: 14px;
+  margin-top: 0.618rem;
+}
+
+.creation form .form-line {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  line-height: 1.6rem;
+  height: 2.4rem;
+}
+
+.creation form {
+  margin-top: 1.6rem;
+}
+
+.creation form label {
+  width: 180px;
+}
+
+.creation form input[type="text"] {
+  width: 100%;
+}
+
+.creation form input[type="submit"] {
+  width: 120px;
+  height: 30px;
+  margin: 1.6rem auto 0;
+  border-radius: 4px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background-color: #bbb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.creation form input[type="submit"]:active {
+  background-color: #aaa;
+}
+
+.creation form label,
+.creation form input[type="text"] {
+  line-height: 1.6rem;
+}
+
+.history {
+  width: 100%;
+  margin: 2rem auto;
+}
+
+.history table {
+  width: 100%;
+  background-color: #fff;
+}
+
+.history thead {
+  background-color: #432f2f;
+  color: #fff;
+}
+
+.history th,
+.history td {
+  padding: 1rem;
+}
+
+.history table,
+.history td {
+  border: 0.1px solid #432f2f;
+}
