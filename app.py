@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request
-from flask_sqlalchemy import SQLAlchemy
 import MeCab
 import time
 import random
@@ -199,4 +198,4 @@ def post():
     )
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

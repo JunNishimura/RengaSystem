@@ -8,7 +8,7 @@ body {
   font-family: "Helvetica Neue", "Helvetica", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Arial", "Yu Gothic", "Meiryo", sans-serif;
   font-size: 16px;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   background-color: #ede4cd; /* 練色 */
   color: #432f2f; /* 黒鳶 */
   text-align: center;
