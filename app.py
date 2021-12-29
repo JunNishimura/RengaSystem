@@ -4,13 +4,20 @@ import time
 import random
 import pandas as pd
 
-from states import States, Yomite
 from AI.generator import generate
 
+class History:
+    ku_list = []
+    
+    def add_history(self, new_ku):
+        self.ku_list.append(new_ku)
+
+    def reset_history(self):
+        self.ku_list = []
+
 SEQUENCE_LENGTH = 10
-yomite_history = []
-ku_history = []
-renga_states = States(yomite=Yomite.AI)
+yomite_history = ["AI", "PLAYER", "AI"]
+ku_history = History()
 app = Flask(__name__)
 tagger = MeCab.Tagger("-d {}".format("./dict/"))
 
@@ -27,30 +34,6 @@ def remove_dakuten(word: str) -> str:
     for i in range(len(word)):
         new_word += dakuten_dict[word[i]] if word[i] in dakuten_dict.keys() else word[i]
     return new_word
-
-def state_to_player(yomite):
-    return "AI" if yomite == Yomite.AI else "Player"
-
-@app.route('/', methods=['GET'])
-def index():
-    # AIが創作する番
-    # if renga_states.yomite == Yomite.AI:
-    # 句を生成
-    rand_val = random.randint(0, len(initials)-1)
-    initial = initials[rand_val]
-    AI_ku = generate(initial)
-    # 新しい句をヒストリーに追加
-    ku_history.append(AI_ku)
-    # 詠み手の交代
-    current_yomite = renga_states.yomite
-    yomite_history.append(state_to_player(current_yomite))
-    renga_states.change_yomite()
-        
-    return render_template(
-        'index.html', 
-        ku_history = ku_history,
-        yomite_history = yomite_history
-    )
 
 def get_morphemes(tagger, sentence: str):
     morphemes = []
@@ -131,7 +114,7 @@ def get_assoc_words(ku: str, morphemes: list):
 
     return assoc_words
 
-def get_next_ku(cur_ku_former: str, cur_ku_latter: str, time_limit: int):
+def generate_next_ku(cur_ku_former: str, cur_ku_latter: str, time_limit: int):
     start_time = time.time()
     next_ku = ""
     best_score = -1
@@ -165,35 +148,43 @@ def get_next_ku(cur_ku_former: str, cur_ku_latter: str, time_limit: int):
         initial = initials[rand_val]
         next_ku = generate(initial)
     return next_ku
-            
-@app.route('/', methods=['POST'])
-def post():
-    # 入力句の取得
+
+@app.route("/")
+def index():
+    ku_history.reset_history()
+    return render_template("index.html")
+
+@app.route("/creation")
+def creation():
+    # 最初はAIが句を作る
+    rand_val = random.randint(0, len(initials)-1)
+    initial = initials[rand_val]
+    AI_ku = generate(initial)
+    # 新しい句をヒストリーに追加
+    ku_history.add_history(AI_ku)
+    
+    return render_template(
+        'creation.html',
+        ku_history = ku_history.ku_list,
+        yomite_history = yomite_history
+    )
+
+@app.route('/result', methods=['POST'])
+def result():
     ku_former = request.form.get('input-ku__former')
     ku_latter = request.form.get('input-ku__latter')
-    ku = ku_former + " " + ku_latter
+    user_ku = ku_former + " " + ku_latter
     
     # ユーザーからの入力句をヒストリーに追加
-    ku_history.append(ku)
-    # 詠み手の交代
-    current_yomite = renga_states.yomite
-    yomite_history.append(state_to_player(current_yomite))
-    renga_states.change_yomite()
-    
+    ku_history.add_history(user_ku)
     # 次の句を取得
-    next_ku = get_next_ku(ku_former, ku_latter, 10)
-    
+    AI_ku = generate_next_ku(ku_former, ku_latter, 10)
     # 新しい句をヒストリーに追加
-    ku_history.append(next_ku)
+    ku_history.add_history(AI_ku)
     
-    # 詠み手の交代
-    current_yomite = renga_states.yomite
-    yomite_history.append(state_to_player(current_yomite))
-    renga_states.change_yomite()
-
     return render_template(
-        'index.html', 
-        ku_history = ku_history,
+        'result.html', 
+        ku_history = ku_history.ku_list,
         yomite_history = yomite_history
     )
 

@@ -1,54 +1,9 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="container">
-  <div class="header">
-    <div class="title">連歌システム</div>
-  </div>
-  <div class="overview">
-    ここはAIと連歌を楽しむための場所です。<br>
-    AIと共創する事で新しい創造の形を模索していきましょう。
-  </div>
-  <div class="creation">
-    <div class="creation-title">
-      創作
-    </div>
-    <div class="creation-explanation">
-      ※平仮名で入力してください。
-    </div>
-    <form action="/" method="POST" enctype="multipart/form-data">
-      <div class="form-line">
-        <label for="input-ku__former">前半7文字</label>
-        <input type="text" id="input-ku__former" name="input-ku__former">
-      </div>
-      <div class="form-line">
-        <label for="input-ku__latter">後半7文字</label>
-        <input type="text" id="input-ku__latter" name="input-ku__latter">
-      </div>
-      <div class="form-line">
-        <input type="submit" value="投稿">
-      </div>
-    </form>
-  </div>
-  <div class="history">
-    <table>
-      <thead>
-        <tr>
-          <th>番号</th>
-          <th>詠み手</th>
-          <th>句</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for ku in ku_history %}
-          <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ yomite_history[loop.index-1] }}</td>
-            <td>{{ ku }}</td>            
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+<div class="mode-select">
+  <div class="btn">
+    <a href="{{ url_for('creation') }}">開始</a>
   </div>
 </div>
 {% endblock %}

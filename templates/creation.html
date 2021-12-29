@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="creation">
+  <div class="creation-title">
+    創作フォーム
+  </div>
+  <div class="creation-explanation">
+    ※平仮名で入力してください。
+  </div>
+  <form action="/result" method="POST" enctype="multipart/form-data">
+    <div class="form-line">
+      <label for="input-ku__former">前7文字</label>
+      <input type="text" id="input-ku__former" name="input-ku__former">
+    </div>
+    <div class="form-line">
+      <label for="input-ku__latter">後7文字</label>
+      <input type="text" id="input-ku__latter" name="input-ku__latter">
+    </div>
+    <div class="form-line">
+      <input type="submit" value="投稿">
+    </div>
+  </form>
+</div>
+<div class="history">
+  <table>
+    <thead>
+      <tr>
+        <th>番号</th>
+        <th>詠み手</th>
+        <th>句</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ku in ku_history %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ yomite_history[loop.index-1] }}</td>
+          <td>{{ ku }}</td>            
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

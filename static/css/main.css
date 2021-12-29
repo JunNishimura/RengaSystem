@@ -40,6 +40,32 @@ body {
   line-height: 1.6rem;
 }
 
+.mode-select {
+  margin-top: 64px;
+}
+.btn {
+  width: 250px;
+  line-height: 33px;
+  margin: 16px auto 48px;
+  background-color: #fff;
+  border-radius: 4px;
+}
+
+.btn a {
+  padding: 10px 0;
+  display: block;
+  color: #432f2f;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background-color: #f6f6f6;
+}
+
+.btn:active {
+  background-color: #f1f1f1;
+}
+
 .creation {
   width: 100%;
   background-color: #fff;
@@ -62,8 +88,6 @@ body {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  line-height: 1.6rem;
-  height: 2.4rem;
 }
 
 .creation form {
@@ -86,12 +110,15 @@ body {
   border: none;
   outline: none;
   cursor: pointer;
-  background-color: #bbb;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  background-color: #eaeaea;
+}
+
+.creation form input[type="submit"]:hover {
+  background-color: #e1e1e1;
 }
 
 .creation form input[type="submit"]:active {
-  background-color: #aaa;
+  background-color: #d9d9d9;
 }
 
 .creation form label,
@@ -122,4 +149,8 @@ body {
 .history table,
 .history td {
   border: 0.1px solid #432f2f;
+}
+
+.result {
+  margin-top: 64px;
 }

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="result">
+  <div class="result-message">
+    お疲れ様でした。今回は3句のみでしたが、将来的には100句の掛け合いである百韻連歌を出来るよう研究を進めたいと思います。
+  </div>
+</div>
+<div class="history">
+  <table>
+    <thead>
+      <tr>
+        <th>番号</th>
+        <th>詠み手</th>
+        <th>句</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ku in ku_history %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ yomite_history[loop.index-1] }}</td>
+          <td>{{ ku }}</td>            
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div class="btn">
+  <a href="{{ url_for('index') }}">戻る</a>
+</div>
+{% endblock %}
