@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+import pathlib
 import MeCab
 import time
 import random
@@ -19,7 +20,7 @@ SEQUENCE_LENGTH = 10
 yomite_history = ["AI", "PLAYER", "AI"]
 ku_history = History()
 app = Flask(__name__)
-tagger = MeCab.Tagger("-d {}".format("./dict/"))
+tagger = MeCab.Tagger("-d {}".format(pathlib.Path("./dict/")))
 
 dakuten_dict = {
     'が': 'か', 'ぎ': 'き', 'ぐ': 'く', 'げ': 'け', 'ご': 'こ',
