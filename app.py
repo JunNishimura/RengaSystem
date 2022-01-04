@@ -1,3 +1,6 @@
+#!/home/ubuntu/.pyenv/versions/renga/bin/python3
+# -*- coding: utf-8 -*-
+
 from flask import Flask, render_template, request
 import pathlib
 import MeCab
