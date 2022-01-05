@@ -1,26 +1,26 @@
-#!/home/ubuntu/.pyenv/versions/renga/bin/python3
-# -*- coding: utf-8 -*-
-
 from flask import Flask, render_template, request
 import pathlib
 import MeCab
 import time
 import random
 import pandas as pd
+from pandas.io.pytables import IndexCol
 
 from AI.generator import generate
 
 class History:
-    ku_list = []
+    li = []
     
     def add_history(self, new_ku):
-        self.ku_list.append(new_ku)
+        self.li.append(new_ku)
 
     def reset_history(self):
-        self.ku_list = []
+        self.li = []
 
 SEQUENCE_LENGTH = 10
 yomite_history = ["AI", "PLAYER", "AI"]
+season_history = History()
+kigo_history = History()
 ku_history = History()
 app = Flask(__name__)
 tagger = MeCab.Tagger("-d {}".format(pathlib.Path("./dict/")))
@@ -153,8 +153,31 @@ def generate_next_ku(cur_ku_former: str, cur_ku_latter: str, time_limit: int):
         next_ku = generate(initial)
     return next_ku
 
+def get_season_kigo(ku: str):
+    candidates = []
+    kigo_df = pd.read_csv('./data/kigo.csv', index_col=0)
+    
+    morphemes = get_morphemes(tagger, ku)
+    for morpheme in morphemes:
+        match_row = kigo_df[kigo_df['読み仮名'] == morpheme]
+        if len(match_row) == 1:
+            # (季節, 季語)のtupleを追加
+            candidates.append((match_row['季節'].tolist()[0], morpheme))
+    
+    if len(candidates) == 1:
+        return candidates[0]
+    elif len(candidates) > 1:
+        seasons = set(map(lambda x: x[0], candidates))
+        kigo = ', '.join(list(map(lambda x: x[1], candidates)))
+        if len(seasons) == 1:
+            return (seasons.pop(), kigo)
+    
+    return ('', '')
+
 @app.route("/")
 def index():
+    season_history.reset_history()
+    kigo_history.reset_history()
     ku_history.reset_history()
     return render_template("index.html")
 
@@ -164,13 +187,17 @@ def creation():
     rand_val = random.randint(0, len(initials)-1)
     initial = initials[rand_val]
     AI_ku = generate(initial)
-    # 新しい句をヒストリーに追加
+    season, kigo = get_season_kigo(AI_ku)
+    season_history.add_history(season)
+    kigo_history.add_history(kigo)
     ku_history.add_history(AI_ku)
     
     return render_template(
         'creation.html',
-        ku_history = ku_history.ku_list,
-        yomite_history = yomite_history
+        ku_history = ku_history.li,
+        yomite_history = yomite_history,
+        season_history = season_history.li,
+        kigo_history = kigo_history.li
     )
 
 @app.route('/result', methods=['POST'])
@@ -181,15 +208,22 @@ def result():
     
     # ユーザーからの入力句をヒストリーに追加
     ku_history.add_history(user_ku)
+    season, kigo = get_season_kigo(user_ku)
+    season_history.add_history(season)
+    kigo_history.add_history(kigo)
     # 次の句を取得
     AI_ku = generate_next_ku(ku_former, ku_latter, 10)
-    # 新しい句をヒストリーに追加
+    season, kigo = get_season_kigo(AI_ku)
+    season_history.add_history(season)
+    kigo_history.add_history(kigo)
     ku_history.add_history(AI_ku)
     
     return render_template(
         'result.html', 
-        ku_history = ku_history.ku_list,
-        yomite_history = yomite_history
+        ku_history = ku_history.li,
+        yomite_history = yomite_history,
+        season_history = season_history.li,
+        kigo_history = kigo_history.li
     )
 
 if __name__ == '__main__':

@@ -13,6 +13,8 @@
         <th>番号</th>
         <th>詠み手</th>
         <th>句</th>
+        <th>季節</th>
+        <th>季語</th>
       </tr>
     </thead>
     <tbody>
@@ -20,7 +22,9 @@
         <tr>
           <td>{{ loop.index }}</td>
           <td>{{ yomite_history[loop.index-1] }}</td>
-          <td>{{ ku }}</td>            
+          <td>{{ ku }}</td>
+          <td>{{ season_history[loop.index-1] }}</td>
+          <td>{{ kigo_history[loop.index-1] }}</td>       
         </tr>
       {% endfor %}
     </tbody>
