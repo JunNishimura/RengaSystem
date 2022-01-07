@@ -4,7 +4,6 @@ import MeCab
 import time
 import random
 import pandas as pd
-from pandas.io.pytables import IndexCol
 
 from AI.generator import generate
 

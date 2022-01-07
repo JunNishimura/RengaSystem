@@ -1,4 +1,3 @@
-RENGA_PKL_PATH = '../pickles/renga_df_575.pkl'
 SEQ_LENGTH = 25
 BATCH_SIZE = 50
 BUFFER_SIZE = 10000

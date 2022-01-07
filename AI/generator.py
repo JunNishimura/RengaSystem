@@ -2,6 +2,7 @@ import torch
 import torch.nn.functional as F
 import pandas as pd
 import numpy as np
+import pathlib
 
 from AI.params import *
 from AI.preprocessor import RengaPreprocessor, DakutenClassificationPreprocessor
@@ -43,17 +44,17 @@ def dakuten_predict(ids, model):
 def generate(initial: str):
     # 連歌モデルの構築
     try:
-        df = pd.read_pickle(RENGA_PKL_PATH)
+        df = pd.read_pickle(pathlib.Path('../pickles/renga_df_575.pkl'))
     except:
         import pickle
-        with open(RENGA_PKL_PATH, 'rb') as f:
+        with open('../pickles/renga_df_575.pkl', 'rb') as f:
             df = pickle.load(f)
     verse_list = df.stripped_verse.tolist()
     renga_prepro = RengaPreprocessor(SEQ_LENGTH)
     renga_prepro.fit(verse_list)
     RENGA_VOCAB_SIZE = len(renga_prepro.char_to_id)
     renga_model = RengaModel(RENGA_VOCAB_SIZE, EMBEDDING_DIM, HIDDEN_SIZE, NUM_LAYERS)
-    renga_model.load_state_dict(torch.load('./checkpoints/renga_ckpt.pt')['model_state_dict'])
+    renga_model.load_state_dict(torch.load(pathlib.Path('./checkpoints/renga_ckpt.pt'))['model_state_dict'])
     renga_model.eval()
 
     # dakuten modelの構築
@@ -61,7 +62,7 @@ def generate(initial: str):
     dakuten_cls_prepro.fit()
     DAKUTEN_CLS_VOCAB_SIZE = len(dakuten_cls_prepro.char_to_id)
     dakuten_cls_model = DakutenClassifier(DAKUTEN_CLS_VOCAB_SIZE, DAKUTEN_CLS_EMBEDDING_DIM)
-    dakuten_cls_model.load_state_dict(torch.load('./checkpoints/dakuten_cls_ckpt.pt')['model_state_dict'])
+    dakuten_cls_model.load_state_dict(torch.load(pathlib.Path('./checkpoints/dakuten_cls_ckpt.pt'))['model_state_dict'])
     dakuten_cls_model.eval()
     dakuten_cls_model.to('cpu')
 
@@ -87,31 +88,3 @@ def generate(initial: str):
                 ku += next_char
 
     return ku
-
-    # かな辞書へのパス
-    # kobun_dict_path = '../UniDic-wabun_1603/'
-    # tagger = MeCab.Tagger("-d {}".format(kobun_dict_path))
-    # for renga in generated_renga_list:
-    #     # 濁点ありの句へと変換
-    #     renga = "".join(renga.split("\t"))
-    #     dakuten_renga = ""
-    #     for i in range(len(renga)):
-    #         if i >= 1 and i <= len(renga)-2 and isDakutenable(renga[i]):
-    #             # 濁点の可能性がある場合は、濁点判定モデルで濁点ありか否かを判定
-    #             ids = [dakuten_cls_prepro.char_to_id[ch] for ch in renga[i-1:i+2]]
-    #             ids = torch.tensor(ids)
-    #             isDakuten = dakuten_predict(ids, dakuten_cls_model)
-    #             if isDakuten:
-    #                 # 濁点に変換する
-    #                 dakuten_renga += dakuten_dict[renga[i]]
-    #             else:
-    #                 # 濁点に変換しない
-    #                 dakuten_renga += renga[i]
-    #         else:
-    #             dakuten_renga += renga[i]
-
-    #     print("original: ", renga)
-    #     print("dakuten: ", dakuten_renga)
-        
-    #     # morpheme_sentece = get_morpheme_sentence(tagger, candidate)
-    #     # print(morpheme_sentece)
