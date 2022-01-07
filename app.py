@@ -32,6 +32,13 @@ dakuten_dict = {
 }
 initials = 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふめほまみむめもらりるれろわ'
 
+assoc_df = pd.read_csv('./data/associative_words.csv', index_col=0)
+first_keywords = assoc_df['first_keyword'].unique().tolist()
+second_keywords = assoc_df['second_keyword'].unique().tolist()
+
+ku_df = pd.read_csv('./data/ku_list.csv')
+ku_list = ku_df['ku'].tolist()
+
 def remove_dakuten(word: str) -> str:
     new_word = ""
     for i in range(len(word)):
@@ -78,14 +85,11 @@ def get_assoc_words(ku: str, morphemes: list):
     }
     first_assoc_set = set()
     second_assoc_set = set()
-    df = pd.read_csv('./data/associative_words.csv', index_col=0)
-    first_keywords = df['first_keyword'].unique().tolist()
-    second_keywords = df['second_keyword'].unique().tolist()
     
     # second_keywordの方がfirst_keywordよりweightが大きい
     for s_keyword in second_keywords:
         if s_keyword in ku:
-            tmp_assoc_list = df[df['second_keyword'] == s_keyword]['associative_word'].unique().tolist()
+            tmp_assoc_list = assoc_df[assoc_df['second_keyword'] == s_keyword]['associative_word'].unique().tolist()
             tmp_assoc_list2 = []
             for word in tmp_assoc_list:
                 split_word = word.split('-')
@@ -99,7 +103,7 @@ def get_assoc_words(ku: str, morphemes: list):
     
     for morpheme in morphemes:
         if morpheme in first_keywords:
-            tmp_assoc_list = df[df['first_keyword'] == morpheme]['associative_word'].unique().tolist()
+            tmp_assoc_list = assoc_df[assoc_df['first_keyword'] == morpheme]['associative_word'].unique().tolist()
             tmp_assoc_list2 = []
             for word in tmp_assoc_list:
                 split_word = word.split('-')
@@ -118,7 +122,7 @@ def get_assoc_words(ku: str, morphemes: list):
     return assoc_words
 
 def generate_next_ku(cur_ku_former: str, cur_ku_latter: str, time_limit: int):
-    start_time = time.time()
+    # start_time = time.time()
     next_ku = ""
     best_score = -1
     
@@ -136,20 +140,24 @@ def generate_next_ku(cur_ku_former: str, cur_ku_latter: str, time_limit: int):
     
     # 関連語・連想語がある場合は、それらをもとに次の句として相応しい句を探索
     if len(assoc_words['first_keyword']) > 0 or len(assoc_words['second_keyword']) > 0:
-        idx = 0
-        # 指定した時間が切れるまで生成
-        while int(time.time() - start_time) < time_limit:
-            ku_generated = generate(initials[idx])
-            score = get_ku_score(ku_generated, assoc_words['first_keyword'], assoc_words['second_keyword'])
+        # 句リストを全走査してベストなものを取得
+        for ku in ku_list:
+            score = get_ku_score(ku, assoc_words['first_keyword'], assoc_words['second_keyword'])
             if score > best_score:
                 best_score = score
-                next_ku = ku_generated
-            idx = (idx + 1) % len(initials)
+                next_ku = ku
+        # 指定した時間が切れるまで生成
+        # idx = 0
+        # while int(time.time() - start_time) < time_limit:
+        #     ku_generated = generate(initials[idx])
+        #     score = get_ku_score(ku_generated, assoc_words['first_keyword'], assoc_words['second_keyword'])
+        #     if score > best_score:
+        #         best_score = score
+        #         next_ku = ku_generated
+        #     idx = (idx + 1) % len(initials)
     else: # 関連語・連想語がない場合は、ランダムで句を選択
         print('no associative words')
-        rand_val = random.randint(0, len(initials)-1)
-        initial = initials[rand_val]
-        next_ku = generate(initial)
+        next_ku = random.choice(ku_list)
     return next_ku
 
 def get_season_kigo(ku: str):

@@ -61,13 +61,13 @@ def generate(initial: str):
     renga_model.eval()
 
     # dakuten modelの構築
-    dakuten_cls_prepro = DakutenClassificationPreprocessor()
-    dakuten_cls_prepro.fit()
-    DAKUTEN_CLS_VOCAB_SIZE = len(dakuten_cls_prepro.char_to_id)
-    dakuten_cls_model = DakutenClassifier(DAKUTEN_CLS_VOCAB_SIZE, DAKUTEN_CLS_EMBEDDING_DIM)
-    dakuten_cls_model.load_state_dict(torch.load(pathlib.Path('./checkpoints/dakuten_cls_ckpt.pt'), map_location='cpu')['model_state_dict'])
-    dakuten_cls_model.eval()
-    dakuten_cls_model.to('cpu')
+    # dakuten_cls_prepro = DakutenClassificationPreprocessor()
+    # dakuten_cls_prepro.fit()
+    # DAKUTEN_CLS_VOCAB_SIZE = len(dakuten_cls_prepro.char_to_id)
+    # dakuten_cls_model = DakutenClassifier(DAKUTEN_CLS_VOCAB_SIZE, DAKUTEN_CLS_EMBEDDING_DIM)
+    # dakuten_cls_model.load_state_dict(torch.load(pathlib.Path('./checkpoints/dakuten_cls_ckpt.pt'), map_location='cpu')['model_state_dict'])
+    # dakuten_cls_model.eval()
+    # dakuten_cls_model.to('cpu')
 
     # inference
     with torch.no_grad():
