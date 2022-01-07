@@ -151,6 +151,6 @@ body {
   border: 0.1px solid #432f2f;
 }
 
-.result {
-  margin-top: 64px;
+.result-message {
+  margin: 16px 0;
 }
