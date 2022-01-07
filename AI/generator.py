@@ -57,7 +57,7 @@ def generate(initial: str):
     renga_prepro.fit(verse_list)
     RENGA_VOCAB_SIZE = len(renga_prepro.char_to_id)
     renga_model = RengaModel(RENGA_VOCAB_SIZE, EMBEDDING_DIM, HIDDEN_SIZE, NUM_LAYERS)
-    renga_model.load_state_dict(torch.load(pathlib.Path('./checkpoints/renga_ckpt.pt'))['model_state_dict'])
+    renga_model.load_state_dict(torch.load(pathlib.Path('./checkpoints/renga_ckpt.pt'), map_location='cpu')['model_state_dict'])
     renga_model.eval()
 
     # dakuten modelの構築
@@ -65,7 +65,7 @@ def generate(initial: str):
     dakuten_cls_prepro.fit()
     DAKUTEN_CLS_VOCAB_SIZE = len(dakuten_cls_prepro.char_to_id)
     dakuten_cls_model = DakutenClassifier(DAKUTEN_CLS_VOCAB_SIZE, DAKUTEN_CLS_EMBEDDING_DIM)
-    dakuten_cls_model.load_state_dict(torch.load(pathlib.Path('./checkpoints/dakuten_cls_ckpt.pt'))['model_state_dict'])
+    dakuten_cls_model.load_state_dict(torch.load(pathlib.Path('./checkpoints/dakuten_cls_ckpt.pt'), map_location='cpu')['model_state_dict'])
     dakuten_cls_model.eval()
     dakuten_cls_model.to('cpu')
 
