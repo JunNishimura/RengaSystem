@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.nn.functional as F
 import pandas as pd
@@ -43,11 +44,13 @@ def dakuten_predict(ids, model):
 # AIによる句の生成
 def generate(initial: str):
     # 連歌モデルの構築
+    pickle_dir = os.path.dirname(os.path.abspath(__file__))
+    pickle_path = os.path.normpath(os.path.join(pickle_dir, '../pickles/renga_df_575.pkl'))
     try:
-        df = pd.read_pickle(pathlib.Path('../pickles/renga_df_575.pkl'))
+        df = pd.read_pickle(pickle_path)
     except:
         import pickle
-        with open('../pickles/renga_df_575.pkl', 'rb') as f:
+        with open(pickle_path, 'rb') as f:
             df = pickle.load(f)
     verse_list = df.stripped_verse.tolist()
     renga_prepro = RengaPreprocessor(SEQ_LENGTH)
