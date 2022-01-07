@@ -16,7 +16,7 @@ dakuten_dict = {
     'は': 'ば', 'ひ': 'び', 'ふ': 'ぶ', 'へ': 'べ', 'ほ': 'ぼ'
 }
 
-def get_morpheme_sentence(tagger, ku: str) -> str:
+def get_morpheme_sentence(tagger, ku: str):
     ku_pieces = ku.split("\t")
     sentence = []
 
@@ -31,7 +31,7 @@ def get_morpheme_sentence(tagger, ku: str) -> str:
 
     return " ".join(sentence)
 
-def isDakutenable(word: str) -> bool:
+def isDakutenable(word: str):
     if word in list('かきくけこさしすせそたちつてとはひふへほ'):
         return True
     return False
