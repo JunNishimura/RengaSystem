@@ -155,3 +155,5 @@ dict/
 checkpoints/
 pickles/
 rengaEnv/
+
+*.ipynb

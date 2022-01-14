@@ -37,7 +37,6 @@ first_keywords = assoc_df['first_keyword'].unique().tolist()
 second_keywords = assoc_df['second_keyword'].unique().tolist()
 
 ku_df = pd.read_csv('./data/ku_list.csv')
-ku_list = ku_df['ku'].tolist()
 
 def remove_dakuten(word: str) -> str:
     new_word = ""
@@ -47,7 +46,7 @@ def remove_dakuten(word: str) -> str:
 
 def get_morphemes(tagger, sentence: str):
     morphemes = []
-    
+
     node = tagger.parseToNode(sentence)
     while node:
         features = node.feature.split(",")
@@ -57,26 +56,25 @@ def get_morphemes(tagger, sentence: str):
 
     return morphemes
 
-def get_ku_score(ku_candidate: str, assoc_words_first: list, assoc_words_second):
+def get_ku_score(ku_candidate: str, assoc_words_first: list, assoc_words_second: list):
     score = 0
-    
+
+    # 句の長さが不適切だとスコアを下げる
+    if len(ku_candidate) < 17 or len(ku_candidate) > 21:
+        score -= 10
+
     # assoc_word_firstには3点
     for assoc_word in assoc_words_first:
         if assoc_word in ku_candidate:
             score += 3
-    
+
     # assoc_word_secondには5点
     for assoc_word in assoc_words_second:
         if assoc_word in ku_candidate:
             score += 5
-            
-    if score > 0:
-        print('-'*40)
-        print('candidate: ', ku_candidate)
-        print('first: ', assoc_words_first)
-        print('second: ', assoc_words_second)
+
     return score
-    
+
 # 考慮する必要のある点
 def get_assoc_words(ku: str, morphemes: list):
     assoc_words = {
@@ -121,10 +119,8 @@ def get_assoc_words(ku: str, morphemes: list):
 
     return assoc_words
 
-def generate_next_ku(cur_ku_former: str, cur_ku_latter: str, time_limit: int):
-    # start_time = time.time()
+def generate_next_ku(cur_ku_former: str, cur_ku_latter: str):
     next_ku = ""
-    best_score = -1
     
     # 入力句に形態素解析を施す
     former_morphemes = get_morphemes(tagger, cur_ku_former)
@@ -140,24 +136,13 @@ def generate_next_ku(cur_ku_former: str, cur_ku_latter: str, time_limit: int):
     
     # 関連語・連想語がある場合は、それらをもとに次の句として相応しい句を探索
     if len(assoc_words['first_keyword']) > 0 or len(assoc_words['second_keyword']) > 0:
-        # 句リストを全走査してベストなものを取得
-        for ku in ku_list:
-            score = get_ku_score(ku, assoc_words['first_keyword'], assoc_words['second_keyword'])
-            if score > best_score:
-                best_score = score
-                next_ku = ku
-        # 指定した時間が切れるまで生成
-        # idx = 0
-        # while int(time.time() - start_time) < time_limit:
-        #     ku_generated = generate(initials[idx])
-        #     score = get_ku_score(ku_generated, assoc_words['first_keyword'], assoc_words['second_keyword'])
-        #     if score > best_score:
-        #         best_score = score
-        #         next_ku = ku_generated
-        #     idx = (idx + 1) % len(initials)
+        # 全句に対してスコアを計算
+        ku_df['score'] = ku_df['ku'].apply(lambda x: get_ku_score(x, assoc_words['first_keyword'], assoc_words['second_keyword']))
+        # top3まで候補を絞り、3つの句からランダムで抽出
+        top3_df = ku_df.sort_values('score', ascending=False).head(3)
+        next_ku = top3_df.sample()['ku'].tolist()[0]
     else: # 関連語・連想語がない場合は、ランダムで句を選択
-        print('no associative words')
-        next_ku = random.choice(ku_list)
+        next_ku = ku_df.sample()['ku'].tolist()[0]
     return next_ku
 
 def get_season_kigo(ku: str):
@@ -219,7 +204,7 @@ def result():
     season_history.add_history(season)
     kigo_history.add_history(kigo)
     # 次の句を取得
-    AI_ku = generate_next_ku(ku_former, ku_latter, 10)
+    AI_ku = generate_next_ku(ku_former, ku_latter)
     season, kigo = get_season_kigo(AI_ku)
     season_history.add_history(season)
     kigo_history.add_history(kigo)
