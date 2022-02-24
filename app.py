@@ -96,7 +96,7 @@ def get_assoc_words(ku: str, morphemes: list):
                 elif len(split_word) > 1:
                     split_word2 = [remove_dakuten(word) for word in split_word]
                     tmp_assoc_list2 += split_word2
-                    
+
             second_assoc_set |= set(tmp_assoc_list2)
     
     for morpheme in morphemes:
@@ -110,9 +110,9 @@ def get_assoc_words(ku: str, morphemes: list):
                 elif len(split_word) > 1:
                     split_word2 = [remove_dakuten(word) for word in split_word]
                     tmp_assoc_list2 += split_word2
-                    
+
             first_assoc_set |= set(tmp_assoc_list2)
-    
+
     second_assoc_set -= first_assoc_set      
     assoc_words['first_keyword'] = list(first_assoc_set)
     assoc_words['second_keyword'] = list(second_assoc_set)
@@ -209,7 +209,10 @@ def result():
     season_history.add_history(season)
     kigo_history.add_history(kigo)
     ku_history.add_history(AI_ku)
-    
+
+    with open('./data/result.txt', mode='a') as f:
+       f.write('\n' + ', '.join(ku_history.li))
+
     return render_template(
         'result.html', 
         ku_history = ku_history.li,
